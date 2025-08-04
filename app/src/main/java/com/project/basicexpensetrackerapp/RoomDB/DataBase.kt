@@ -2,7 +2,6 @@ package com.project.basicexpensetrackerapp.RoomDB
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 
 @Database(entities = [ExpenseEntity::class], version = 1, exportSchema = true)
