@@ -93,11 +93,17 @@ import java.util.Date
 
 @Composable
 fun ExpenseCard(expense: ExpenseEntity) { // Changed parameter to ExpenseEntity
+    val scope = rememberCoroutineScope()
     Card (
-        modifier = Modifier.padding(8.dp)
+        modifier = Modifier.padding(8.dp),
+        onClick = {
+            scope.launch {
+                MainApplication.amountDb.getAmountDao().deleteAmount(expense = expense)
+            }
+        }
     ){
         Row(
-            modifier = Modifier.fillMaxWidth().padding(8.dp).height(25.dp)
+            modifier = Modifier.fillMaxWidth().padding(8.dp).height(25.dp),
         ){
             Text(text = "Amount: ${expense.amount} on ${expense.createAt}") // Display amount and date
         }
