@@ -33,7 +33,7 @@ import com.project.basicexpensetrackerapp.RoomDB.MainApplication
 import kotlinx.coroutines.launch
 import java.util.Date
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable fun ExpenseTrackerScreen(viewModel: ExpenseViewModel) {
 
     val scope = rememberCoroutineScope()

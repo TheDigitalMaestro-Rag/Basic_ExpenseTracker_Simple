@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.Date
 
-@Entity
+@Entity(tableName = "Expense_Db_table")
 data class ExpenseEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
