@@ -4,9 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
@@ -26,24 +28,51 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.project.basicexpensetrackerapp.RoomDB.ExpenseEntity
+import com.project.basicexpensetrackerapp.RoomDB.ExpenseViewModel.ExpenseViewModel
 import com.project.basicexpensetrackerapp.RoomDB.MainApplication
 import kotlinx.coroutines.launch
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable fun ExpenseTrackerScreen() {
+@Composable fun ExpenseTrackerScreen(viewModel: ExpenseViewModel) {
 
     val scope = rememberCoroutineScope()
-    val expenses by MainApplication.amountDb.getAmountDao().getAmount().collectAsState(initial = emptyList())
 
-    TopAppBar(
-        title = { Text(text = "Expense Tracker") }, // Changed title for clarity
-        modifier = Modifier.background(color = Color.White).fillMaxWidth(1F),
-    )
+    val expenses by viewModel.expenses.collectAsState()
+    val totalIncome by viewModel.totalIncome.collectAsState()
+    val totalExpense by viewModel.totalExpense.collectAsState()
+    val totalSaved by viewModel.totalSaved.collectAsState()
 
     Column (
-        modifier = Modifier.fillMaxWidth().padding(8.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxSize()
+            .padding(8.dp)
     ){
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ){
+            Text(
+                text = "Income : $totalIncome",
+                color = Color(0xFF2E7D32),
+                style = MaterialTheme.typography.bodyLarge
+            )
+
+            Text(
+                text = "Expense : ${-totalExpense}",
+                color = Color(0xFFC62828),
+                style = MaterialTheme.typography.bodyLarge
+            )
+
+            Text(
+                text = "Savings : $totalSaved",
+                color = Color(0xFF1565C0),
+                style = MaterialTheme.typography.bodyLarge
+            )
+        }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -103,15 +132,12 @@ fun ExpenseCard(expense: ExpenseEntity) { // Changed parameter to ExpenseEntity
         }
     ){
         Row(
-            modifier = Modifier.fillMaxWidth().padding(8.dp).height(25.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+                .height(25.dp),
         ){
             Text(text = "Amount: ${expense.amount} on ${expense.createAt}") // Display amount and date
         }
     }
-}
-
-
-@Preview(showBackground = true)
-@Composable fun ExpenseTrackerApp(){
-    ExpenseTrackerScreen()
 }
