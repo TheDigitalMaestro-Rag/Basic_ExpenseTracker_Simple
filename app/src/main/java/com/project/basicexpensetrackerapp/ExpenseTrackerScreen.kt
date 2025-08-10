@@ -1,4 +1,4 @@
-package com.project.basicexpensetrackerapp
+package com.project.expensetrackerapp
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,67 +27,66 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.project.basicexpensetrackerapp.RoomDB.ExpenseEntity
-import com.project.basicexpensetrackerapp.RoomDB.ExpenseViewModel.ExpenseViewModel
-import com.project.basicexpensetrackerapp.RoomDB.MainApplication
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.project.basicexpensetrackerapp.R
+import com.project.expensetrackerapp.ExpenseRoomDB.Entity.ExpenseEntity
+import com.project.expensetrackerapp.ViewModel.ExpenseViewModel
 import kotlinx.coroutines.launch
 import java.util.Date
 
 
-@Composable fun ExpenseTrackerScreen(viewModel: ExpenseViewModel) {
+@Composable
+fun ExpenseTrackerScreen(viewModel: ExpenseViewModel) {
+    val expenses by viewModel.allExpenses.collectAsState(initial = emptyList())
 
-    val scope = rememberCoroutineScope()
+    val totalIncome = expenses.filter { it.category == "Income" }.sumOf { it.amount }
+    val totalExpense = expenses.filter { it.category == "Expense" }.sumOf { it.amount }
+    val totalSaved = totalIncome - totalExpense
 
-    val expenses by viewModel.expenses.collectAsState()
-    val totalIncome by viewModel.totalIncome.collectAsState()
-    val totalExpense by viewModel.totalExpense.collectAsState()
-    val totalSaved by viewModel.totalSaved.collectAsState()
-
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxSize()
             .padding(8.dp)
-    ){
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
-        ){
+        ) {
             Text(
-                text = "Income : $totalIncome",
+                text = "Income : ₹$totalIncome",
                 color = Color(0xFF2E7D32),
                 style = MaterialTheme.typography.bodyLarge
             )
-
             Text(
-                text = "Expense : ${-totalExpense}",
+                text = "Expense : ₹$totalExpense",
                 color = Color(0xFFC62828),
                 style = MaterialTheme.typography.bodyLarge
             )
-
             Text(
-                text = "Savings : $totalSaved",
+                text = "Savings : ₹$totalSaved",
                 color = Color(0xFF1565C0),
                 style = MaterialTheme.typography.bodyLarge
             )
         }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
                 .background(color = Color.White),
             Arrangement.SpaceBetween
-        ){
+        ) {
             IconButton(
                 modifier = Modifier.background(color = MaterialTheme.colorScheme.primary),
                 onClick = {
-                    scope.launch {
-                        // Example: Add an income entry
-                        val newExpense = ExpenseEntity(amount = 500, createAt = Date())
-                        MainApplication.amountDb.getAmountDao().insertAmount(newExpense)
-                    }
+                    // Add dummy income for testing
+                    viewModel.insertExpense(
+                        "Salary", 1000, "Income"
+                    )
                 }
             ) {
                 Icon(
@@ -99,11 +98,10 @@ import java.util.Date
             IconButton(
                 modifier = Modifier.background(color = MaterialTheme.colorScheme.secondaryContainer),
                 onClick = {
-                    scope.launch {
-                        // Example: Add an expense entry
-                        val newExpense = ExpenseEntity(amount = -100, createAt = Date()) // Negative for expense
-                        MainApplication.amountDb.getAmountDao().insertAmount(newExpense)
-                    }
+                    // Add dummy expense for testing
+                    viewModel.insertExpense(
+                        "Snacks", 200, "Expense"
+                    )
                 }
             ) {
                 Icon(
@@ -112,32 +110,33 @@ import java.util.Date
                 )
             }
         }
+
         LazyColumn {
-            items(expenses){ expense -> // Use the expenses from the database
-                ExpenseCard(expense)
+            items(expenses) { expense ->
+                ExpenseCard(expense = expense, viewModel = viewModel)
             }
         }
     }
 }
 
 @Composable
-fun ExpenseCard(expense: ExpenseEntity) { // Changed parameter to ExpenseEntity
-    val scope = rememberCoroutineScope()
-    Card (
-        modifier = Modifier.padding(8.dp),
+fun ExpenseCard(viewModel: ExpenseViewModel, expense: ExpenseEntity) {
+    val date = Date(expense.createdAt).toString()
+
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxWidth(),
         onClick = {
-            scope.launch {
-                MainApplication.amountDb.getAmountDao().deleteAmount(expense = expense)
-            }
+            viewModel.delteExpense(expense)
         }
-    ){
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
-                .height(25.dp),
-        ){
-            Text(text = "Amount: ${expense.amount} on ${expense.createAt}") // Display amount and date
+        ) {
+            Text(text = "₹${expense.amount} • ${expense.category} • $date")
         }
     }
 }
