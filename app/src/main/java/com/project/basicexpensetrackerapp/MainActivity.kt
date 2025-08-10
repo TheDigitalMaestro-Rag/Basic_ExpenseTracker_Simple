@@ -11,8 +11,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.room.Room
+import com.project.basicexpensetrackerapp.ViewModel.ExpenseViewModelFactory
 import com.project.basicexpensetrackerapp.ui.theme.BasicExpenseTrackerAppTheme
 import com.project.expensetrackerapp.ExpenseRoomDB.DataBase.ExpenseDataBase
+import com.project.expensetrackerapp.ExpenseRoomDB.MainApplication.MainApplication
 import com.project.expensetrackerapp.ExpenseTrackerScreen
 import com.project.expensetrackerapp.ViewModel.ExpenseViewModel
 
@@ -21,22 +23,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val ExpenseApp = application as MainApplication
+            val ExpenseDao = ExpenseApp.database.getExpenseDao()
             val viewModel: ExpenseViewModel = viewModel(
-                factory = object : ViewModelProvider.Factory {
-                    override fun <T : ViewModel> create(
-                        modelClass: Class<T>,
-                        extras: CreationExtras
-                    ): T {
-                        val db = Room.databaseBuilder(
-                            applicationContext,
-                            ExpenseDataBase::class.java,
-                            ExpenseDataBase.DBname
-                        ).build()
-
-                        val dao = db.getExpenseDao()
-                        return ExpenseViewModel(dao) as T
-                    }
-                }
+                factory = ExpenseViewModelFactory(dao = ExpenseDao)
             )
             BasicExpenseTrackerAppTheme {
                 ExpenseTrackerScreen(viewModel = viewModel)

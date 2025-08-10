@@ -14,7 +14,7 @@ class ExpenseViewModel(private val dao: ExpenseDao): ViewModel() {
     fun insertExpense(name: String, amount: Int, category: String) {
         viewModelScope.launch {
             val expense = ExpenseEntity(id = 0, name = name, amount = amount, category = category)
-            dao.getExpense(expense)
+            dao.InsertExpense(expense)
         }
     }
 

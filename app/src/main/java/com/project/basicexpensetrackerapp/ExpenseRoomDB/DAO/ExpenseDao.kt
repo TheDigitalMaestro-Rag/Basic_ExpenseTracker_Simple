@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 interface ExpenseDao {
 
     @Insert
-    suspend fun getExpense(expenseEntity: ExpenseEntity)
+    suspend fun InsertExpense(expenseEntity: ExpenseEntity)
 
     @Query("SELECT * FROM Expense_Table ORDER BY createdAt DESC")
     fun getAllExpenses(): Flow<List<ExpenseEntity>>
