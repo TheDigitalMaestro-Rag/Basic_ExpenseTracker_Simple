@@ -17,7 +17,7 @@ This app helps users track daily income & expenses, categorize them, and store e
 
 ## 📸 Screenshots
 | Main Screen |
-| ![Main](doc/Screenshot_20250909_165129.png) |
+| ![Main](doc/Screenshot_20250909_170648.png) |
 
 ---
 
